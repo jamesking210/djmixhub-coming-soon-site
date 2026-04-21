@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DJMIXHUB.com — Coming Soon</title>
-  <meta name="description" content="DJMIXHUB.com is coming soon. A fresh home for mixes, DJs, and community energy." />
-  <link rel="preload" href="assets/logo.jpg" as="image">
-  <link rel="preload" href="assets/HOLD.mp3" as="audio">
+  <meta
+    name="description"
+    content="DJMIXHUB.com is coming soon. A fresh home for mixes, DJs, and community energy."
+  />
+  <link rel="preload" href="assets/logo.jpg" as="image" />
+  <link rel="preload" href="assets/HOLD.mp3" as="audio" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -16,10 +19,17 @@
 
   <main class="hero">
     <section class="card">
+      <div class="top-controls">
+        <button id="audio-toggle" class="audio-button" type="button" aria-pressed="false">
+          ▶ Play Background Audio
+        </button>
+      </div>
+
       <img src="assets/logo.jpg" alt="DJMIXHUB.com logo" class="logo" />
 
       <p class="eyebrow">PROJECT TEASER</p>
       <h1>Coming Soon</h1>
+
       <p class="lead">
         DJMIXHUB.com is getting ready to launch with a dark neon vibe, fresh mixes,
         and a community-first energy built for music lovers and DJs.
@@ -30,54 +40,66 @@
         <span class="pill pill-outline">Stay Tuned</span>
       </div>
 
-      <div class="equalizer" aria-hidden="true">
+      <div class="equalizer" id="equalizer" aria-hidden="true">
         <span></span><span></span><span></span><span></span><span></span>
         <span></span><span></span><span></span><span></span><span></span>
       </div>
 
       <p class="small">
-        A simple teaser page for the upcoming DJMIXHUB.com project.
-      </p>
-
-      <p id="audio-notice" class="small" style="display:none; margin-top:10px;">
-        Tap anywhere to enable background audio.
+        Open Source Energy. Community Sourced Mixes.
       </p>
     </section>
   </main>
 
-  <audio id="bg-audio" loop autoplay preload="auto">
+  <audio id="bg-audio" loop preload="auto">
     <source src="assets/HOLD.mp3" type="audio/mpeg" />
   </audio>
 
   <script>
-    const bgAudio = document.getElementById('bg-audio');
-    const audioNotice = document.getElementById('audio-notice');
+    const bgAudio = document.getElementById("bg-audio");
+    const audioToggle = document.getElementById("audio-toggle");
+    const equalizer = document.getElementById("equalizer");
 
+    let isPlaying = false;
     bgAudio.volume = 0.35;
 
-    function startAudio() {
-      bgAudio.volume = 0.35;
-      bgAudio.play().then(() => {
-        audioNotice.style.display = 'none';
-      }).catch(() => {});
+    function updateUi() {
+      if (isPlaying) {
+        audioToggle.textContent = "■ Stop Background Audio";
+        audioToggle.setAttribute("aria-pressed", "true");
+        equalizer.classList.add("playing");
+      } else {
+        audioToggle.textContent = "▶ Play Background Audio";
+        audioToggle.setAttribute("aria-pressed", "false");
+        equalizer.classList.remove("playing");
+      }
     }
 
-    startAudio();
-
-    bgAudio.play().catch(() => {
-      audioNotice.style.display = 'block';
-
-      const unlockAudio = () => {
-        startAudio();
-        document.removeEventListener('click', unlockAudio);
-        document.removeEventListener('touchstart', unlockAudio);
-        document.removeEventListener('keydown', unlockAudio);
-      };
-
-      document.addEventListener('click', unlockAudio, { once: true });
-      document.addEventListener('touchstart', unlockAudio, { once: true });
-      document.addEventListener('keydown', unlockAudio, { once: true });
+    audioToggle.addEventListener("click", async () => {
+      if (!isPlaying) {
+        try {
+          await bgAudio.play();
+          isPlaying = true;
+          updateUi();
+        } catch (error) {
+          console.error("Audio play failed:", error);
+        }
+      } else {
+        bgAudio.pause();
+        bgAudio.currentTime = 0;
+        isPlaying = false;
+        updateUi();
+      }
     });
+
+    bgAudio.addEventListener("ended", () => {
+      if (!bgAudio.loop) {
+        isPlaying = false;
+        updateUi();
+      }
+    });
+
+    updateUi();
   </script>
 </body>
 </html>
