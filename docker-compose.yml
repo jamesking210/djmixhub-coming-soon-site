@@ -1,0 +1,7 @@
+services:
+  djmixhub-coming-soon:
+    build: .
+    container_name: djmixhub-coming-soon
+    ports:
+      - "8086:80"
+    restart: unless-stopped
