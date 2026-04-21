@@ -6,6 +6,7 @@
   <title>DJMIXHUB.com — Coming Soon</title>
   <meta name="description" content="DJMIXHUB.com is coming soon. A fresh home for mixes, DJs, and community energy." />
   <link rel="preload" href="assets/logo.jpg" as="image">
+  <link rel="preload" href="assets/HOLD.mp3" as="audio">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -35,9 +36,48 @@
       </div>
 
       <p class="small">
-        "Open Source Energy. Community Sourced Mixes."
+        A simple teaser page for the upcoming DJMIXHUB.com project.
+      </p>
+
+      <p id="audio-notice" class="small" style="display:none; margin-top:10px;">
+        Tap anywhere to enable background audio.
       </p>
     </section>
   </main>
+
+  <audio id="bg-audio" loop autoplay preload="auto">
+    <source src="assets/HOLD.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const bgAudio = document.getElementById('bg-audio');
+    const audioNotice = document.getElementById('audio-notice');
+
+    bgAudio.volume = 0.35;
+
+    function startAudio() {
+      bgAudio.volume = 0.35;
+      bgAudio.play().then(() => {
+        audioNotice.style.display = 'none';
+      }).catch(() => {});
+    }
+
+    startAudio();
+
+    bgAudio.play().catch(() => {
+      audioNotice.style.display = 'block';
+
+      const unlockAudio = () => {
+        startAudio();
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
+      };
+
+      document.addEventListener('click', unlockAudio, { once: true });
+      document.addEventListener('touchstart', unlockAudio, { once: true });
+      document.addEventListener('keydown', unlockAudio, { once: true });
+    });
+  </script>
 </body>
 </html>
